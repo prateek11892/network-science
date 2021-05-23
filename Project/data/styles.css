@@ -1,0 +1,22 @@
+.header-css{
+	background-color: #315A96;
+	color: white;
+}
+
+nav{
+	float: left;
+	width: 100%;
+	background: #315A96;
+	text-align: center;
+	color: white;
+	padding: 10px;
+}
+
+.container2{
+	padding-top: 100px;
+}
+
+.header{
+	position: sticky;
+	top: 0;
+}

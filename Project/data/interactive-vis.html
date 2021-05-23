@@ -1,0 +1,198 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href={{ css }}>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+	<style type="text/css">
+		body {
+		  font-family: "Lato", sans-serif;
+		}
+
+		.sidenav {
+		  height: 100%;
+		  width: 0;
+		  position: fixed;
+		  z-index: 1;
+		  top: 0;
+		  left: 0;
+		  background-color: #111;
+		  overflow-x: hidden;
+		  transition: 0.5s;
+		  padding-top: 60px;
+		}
+
+		.sidenav a {
+		  padding: 8px 8px 8px 32px;
+		  text-decoration: none;
+		  font-size: 25px;
+		  color: #818181;
+		  display: block;
+		  transition: 0.3s;
+		}
+
+		.sidenav a:hover {
+		  color: #f1f1f1;
+		}
+
+		.sidenav .closebtn {
+		  position: absolute;
+		  top: 0;
+		  right: 25px;
+		  font-size: 36px;
+		  margin-left: 50px;
+		}
+
+		#main {
+		  transition: margin-left .5s;
+		  padding: 16px;
+		}
+		
+		@media screen and (max-height: 450px) {
+		  .sidenav {padding-top: 15px;}
+		  .sidenav a {font-size: 18px;}
+		}
+		
+		.topnav {
+		  background-color: #333;
+		  
+		}
+
+		.topnav a {
+		  float: left;
+		  color: #f2f2f2;
+		  text-align: center;
+		  padding: 16px 16px;
+		  text-decoration: none;
+		  font-size: 15px;
+		}
+
+		.topnav a.active {
+		  background-color: #4CAF50;
+		  color: white;
+		}
+		
+        #mynetwork {
+            width: 1500px;
+            height: 1000px;
+            background-color: #ffffff;
+            position: relative;
+            float: left;
+        }
+
+</style>
+
+</head>
+
+<body>
+	<div id="mySidenav" class="sidenav">
+	  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+	  <a href="/">Dashboard</a>
+	  <a href="/figures">Show Graphs</a>
+	  <a href="/interactive">Interactive Visualization</a>
+	  <a href="/visualization">Visualization</a>
+	  <a href="/map">View Map</a>
+	  <a href="/shortestpath">Fetch Shortest Path</a>
+	</div>
+	
+	<div id="main" class="topnav">
+		<button style="background-color: #333;" onclick="openNav()" class='btn btn-primary'>
+			<span style="font-size:25px;cursor:pointer;color:white;background-color: #333;" >&#9776;</span>
+		</button>
+		<span style="font-size:25px;color:white">Analysis of Airport Network of India</span>
+		
+	</div>
+	<div id = "mynetwork"></div>
+
+
+<script type="text/javascript">
+
+	function openNav() {
+
+		document.getElementById("mySidenav").style.width = "250px";
+		document.getElementById("main").style.marginLeft = "250px";
+		//document.getElementById("container").style.marginLeft = "250px";
+		document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
+	}
+
+	function closeNav() {
+		document.getElementById("mySidenav").style.width = "0";
+		document.getElementById("main").style.marginLeft= "0";
+		//document.getElementById("container").style.marginLeft= "185px";
+		document.body.style.backgroundColor = "white";
+	}
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        
+        
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([{"id": "BLR", "label": "BLR", "shape": "dot", "size": 10}, {"id": "AMD", "label": "AMD", "shape": "dot", "size": 10}, {"id": "IXB", "label": "IXB", "shape": "dot", "size": 10}, {"id": "BOM", "label": "BOM", "shape": "dot", "size": 10}, {"id": "COK", "label": "COK", "shape": "dot", "size": 10}, {"id": "IXR", "label": "IXR", "shape": "dot", "size": 10}, {"id": "CCU", "label": "CCU", "shape": "dot", "size": 10}, {"id": "GAU", "label": "GAU", "shape": "dot", "size": 10}, {"id": "BBI", "label": "BBI", "shape": "dot", "size": 10}, {"id": "MAA", "label": "MAA", "shape": "dot", "size": 10}, {"id": "HYD", "label": "HYD", "shape": "dot", "size": 10}, {"id": "VTZ", "label": "VTZ", "shape": "dot", "size": 10}, {"id": "DEL", "label": "DEL", "shape": "dot", "size": 10}, {"id": "PNQ", "label": "PNQ", "shape": "dot", "size": 10}, {"id": "GOI", "label": "GOI", "shape": "dot", "size": 10}, {"id": "IDR", "label": "IDR", "shape": "dot", "size": 10}, {"id": "IXC", "label": "IXC", "shape": "dot", "size": 10}, {"id": "JAI", "label": "JAI", "shape": "dot", "size": 10}, {"id": "PAT", "label": "PAT", "shape": "dot", "size": 10}, {"id": "LKO", "label": "LKO", "shape": "dot", "size": 10}, {"id": "IXA", "label": "IXA", "shape": "dot", "size": 10}, {"id": "ATQ", "label": "ATQ", "shape": "dot", "size": 10}, {"id": "CCJ", "label": "CCJ", "shape": "dot", "size": 10}, {"id": "VGA", "label": "VGA", "shape": "dot", "size": 10}, {"id": "RJA", "label": "RJA", "shape": "dot", "size": 10}, {"id": "TCR", "label": "TCR", "shape": "dot", "size": 10}, {"id": "RPR", "label": "RPR", "shape": "dot", "size": 10}, {"id": "TRZ", "label": "TRZ", "shape": "dot", "size": 10}, {"id": "NAG", "label": "NAG", "shape": "dot", "size": 10}, {"id": "CJB", "label": "CJB", "shape": "dot", "size": 10}, {"id": "TRV", "label": "TRV", "shape": "dot", "size": 10}, {"id": "STV", "label": "STV", "shape": "dot", "size": 10}, {"id": "VNS", "label": "VNS", "shape": "dot", "size": 10}, {"id": "CNN", "label": "CNN", "shape": "dot", "size": 10}, {"id": "BDQ", "label": "BDQ", "shape": "dot", "size": 10}, {"id": "BHO", "label": "BHO", "shape": "dot", "size": 10}, {"id": "IXD", "label": "IXD", "shape": "dot", "size": 10}, {"id": "IXE", "label": "IXE", "shape": "dot", "size": 10}, {"id": "IXM", "label": "IXM", "shape": "dot", "size": 10}, {"id": "JDH", "label": "JDH", "shape": "dot", "size": 10}, {"id": "IXG", "label": "IXG", "shape": "dot", "size": 10}, {"id": "DED", "label": "DED", "shape": "dot", "size": 10}, {"id": "UDR", "label": "UDR", "shape": "dot", "size": 10}, {"id": "HBX", "label": "HBX", "shape": "dot", "size": 10}, {"id": "GBI", "label": "GBI", "shape": "dot", "size": 10}, {"id": "MYQ", "label": "MYQ", "shape": "dot", "size": 10}, {"id": "KLH", "label": "KLH", "shape": "dot", "size": 10}, {"id": "DBR", "label": "DBR", "shape": "dot", "size": 10}, {"id": "GWL", "label": "GWL", "shape": "dot", "size": 10}, {"id": "VDY", "label": "VDY", "shape": "dot", "size": 10}, {"id": "IXX", "label": "IXX", "shape": "dot", "size": 10}, {"id": "SXR", "label": "SXR", "shape": "dot", "size": 10}, {"id": "KQH", "label": "KQH", "shape": "dot", "size": 10}, {"id": "IXY", "label": "IXY", "shape": "dot", "size": 10}, {"id": "ISK", "label": "ISK", "shape": "dot", "size": 10}, {"id": "PBD", "label": "PBD", "shape": "dot", "size": 10}, {"id": "JLG", "label": "JLG", "shape": "dot", "size": 10}, {"id": "JSA", "label": "JSA", "shape": "dot", "size": 10}, {"id": "IXZ", "label": "IXZ", "shape": "dot", "size": 10}, {"id": "RDP", "label": "RDP", "shape": "dot", "size": 10}, {"id": "SXV", "label": "SXV", "shape": "dot", "size": 10}, {"id": "CDP", "label": "CDP", "shape": "dot", "size": 10}, {"id": "IXL", "label": "IXL", "shape": "dot", "size": 10}, {"id": "IXJ", "label": "IXJ", "shape": "dot", "size": 10}, {"id": "IXU", "label": "IXU", "shape": "dot", "size": 10}, {"id": "DIB", "label": "DIB", "shape": "dot", "size": 10}, {"id": "GOP", "label": "GOP", "shape": "dot", "size": 10}, {"id": "IMF", "label": "IMF", "shape": "dot", "size": 10}, {"id": "GAY", "label": "GAY", "shape": "dot", "size": 10}, {"id": "SAG", "label": "SAG", "shape": "dot", "size": 10}, {"id": "TIR", "label": "TIR", "shape": "dot", "size": 10}, {"id": "AJL", "label": "AJL", "shape": "dot", "size": 10}, {"id": "RAJ", "label": "RAJ", "shape": "dot", "size": 10}, {"id": "BKB", "label": "BKB", "shape": "dot", "size": 10}, {"id": "KUU", "label": "KUU", "shape": "dot", "size": 10}, {"id": "LUH", "label": "LUH", "shape": "dot", "size": 10}, {"id": "DHM", "label": "DHM", "shape": "dot", "size": 10}, {"id": "IXP", "label": "IXP", "shape": "dot", "size": 10}, {"id": "JLR", "label": "JLR", "shape": "dot", "size": 10}, {"id": "KNU", "label": "KNU", "shape": "dot", "size": 10}, {"id": "JRG", "label": "JRG", "shape": "dot", "size": 10}, {"id": "DMU", "label": "DMU", "shape": "dot", "size": 10}, {"id": "JRH", "label": "JRH", "shape": "dot", "size": 10}, {"id": "IXS", "label": "IXS", "shape": "dot", "size": 10}, {"id": "SHL", "label": "SHL", "shape": "dot", "size": 10}, {"id": "IXI", "label": "IXI", "shape": "dot", "size": 10}, {"id": "JGA", "label": "JGA", "shape": "dot", "size": 10}, {"id": "BHU", "label": "BHU", "shape": "dot", "size": 10}, {"id": "BHJ", "label": "BHJ", "shape": "dot", "size": 10}, {"id": "DIU", "label": "DIU", "shape": "dot", "size": 10}, {"id": "NDC", "label": "NDC", "shape": "dot", "size": 10}, {"id": "IXT", "label": "IXT", "shape": "dot", "size": 10}, {"id": "TEZ", "label": "TEZ", "shape": "dot", "size": 10}, {"id": "JGB", "label": "JGB", "shape": "dot", "size": 10}, {"id": "AGR", "label": "AGR", "shape": "dot", "size": 10}, {"id": "HJR", "label": "HJR", "shape": "dot", "size": 10}, {"id": "PGH", "label": "PGH", "shape": "dot", "size": 10}, {"id": "VDX", "label": "VDX", "shape": "dot", "size": 10}, {"id": "HXB", "label": "HXB", "shape": "dot", "size": 10}]);
+        edges = new vis.DataSet([{"from": "BLR", "to": "AMD", "weight": 1}, {"from": "BLR", "to": "IXB", "weight": 1}, {"from": "BLR", "to": "BOM", "weight": 1}, {"from": "BLR", "to": "COK", "weight": 1}, {"from": "BLR", "to": "IXR", "weight": 1}, {"from": "BLR", "to": "CCU", "weight": 1}, {"from": "BLR", "to": "GAU", "weight": 1}, {"from": "BLR", "to": "BBI", "weight": 1}, {"from": "BLR", "to": "MAA", "weight": 1}, {"from": "BLR", "to": "HYD", "weight": 1}, {"from": "BLR", "to": "VTZ", "weight": 1}, {"from": "BLR", "to": "DEL", "weight": 1}, {"from": "BLR", "to": "PNQ", "weight": 1}, {"from": "BLR", "to": "GOI", "weight": 1}, {"from": "BLR", "to": "IDR", "weight": 1}, {"from": "BLR", "to": "IXC", "weight": 1}, {"from": "BLR", "to": "JAI", "weight": 1}, {"from": "BLR", "to": "PAT", "weight": 1}, {"from": "BLR", "to": "LKO", "weight": 1}, {"from": "BLR", "to": "IXA", "weight": 1}, {"from": "BLR", "to": "ATQ", "weight": 1}, {"from": "BLR", "to": "CCJ", "weight": 1}, {"from": "BLR", "to": "VGA", "weight": 1}, {"from": "BLR", "to": "RJA", "weight": 1}, {"from": "BLR", "to": "TCR", "weight": 1}, {"from": "BLR", "to": "RPR", "weight": 1}, {"from": "BLR", "to": "TRZ", "weight": 1}, {"from": "BLR", "to": "NAG", "weight": 1}, {"from": "BLR", "to": "CJB", "weight": 1}, {"from": "BLR", "to": "TRV", "weight": 1}, {"from": "BLR", "to": "STV", "weight": 1}, {"from": "BLR", "to": "VNS", "weight": 1}, {"from": "BLR", "to": "CNN", "weight": 1}, {"from": "BLR", "to": "BDQ", "weight": 1}, {"from": "BLR", "to": "BHO", "weight": 1}, {"from": "BLR", "to": "IXD", "weight": 1}, {"from": "BLR", "to": "IXE", "weight": 1}, {"from": "BLR", "to": "IXM", "weight": 1}, {"from": "BLR", "to": "JDH", "weight": 1}, {"from": "BLR", "to": "IXG", "weight": 1}, {"from": "BLR", "to": "DED", "weight": 1}, {"from": "BLR", "to": "UDR", "weight": 1}, {"from": "BLR", "to": "HBX", "weight": 1}, {"from": "BLR", "to": "GBI", "weight": 1}, {"from": "BLR", "to": "MYQ", "weight": 1}, {"from": "BLR", "to": "KLH", "weight": 1}, {"from": "BLR", "to": "DBR", "weight": 1}, {"from": "BLR", "to": "GWL", "weight": 1}, {"from": "BLR", "to": "VDY", "weight": 1}, {"from": "BLR", "to": "IXX", "weight": 1}, {"from": "AMD", "to": "MAA", "weight": 1}, {"from": "AMD", "to": "DEL", "weight": 1}, {"from": "AMD", "to": "LKO", "weight": 1}, {"from": "AMD", "to": "CCU", "weight": 1}, {"from": "AMD", "to": "VNS", "weight": 1}, {"from": "AMD", "to": "BOM", "weight": 1}, {"from": "AMD", "to": "IDR", "weight": 1}, {"from": "AMD", "to": "IXC", "weight": 1}, {"from": "AMD", "to": "HYD", "weight": 1}, {"from": "AMD", "to": "GOI", "weight": 1}, {"from": "AMD", "to": "NAG", "weight": 1}, {"from": "AMD", "to": "PNQ", "weight": 1}, {"from": "AMD", "to": "RPR", "weight": 1}, {"from": "AMD", "to": "COK", "weight": 1}, {"from": "AMD", "to": "CJB", "weight": 1}, {"from": "AMD", "to": "SXR", "weight": 1}, {"from": "AMD", "to": "DED", "weight": 1}, {"from": "AMD", "to": "PAT", "weight": 1}, {"from": "AMD", "to": "IXB", "weight": 1}, {"from": "AMD", "to": "BBI", "weight": 1}, {"from": "AMD", "to": "KQH", "weight": 1}, {"from": "AMD", "to": "IXG", "weight": 1}, {"from": "AMD", "to": "BDQ", "weight": 1}, {"from": "AMD", "to": "IXY", "weight": 1}, {"from": "AMD", "to": "ISK", "weight": 1}, {"from": "AMD", "to": "JAI", "weight": 1}, {"from": "AMD", "to": "PBD", "weight": 1}, {"from": "AMD", "to": "JLG", "weight": 1}, {"from": "AMD", "to": "JSA", "weight": 1}, {"from": "MAA", "to": "VTZ", "weight": 1}, {"from": "MAA", "to": "DEL", "weight": 1}, {"from": "MAA", "to": "HYD", "weight": 1}, {"from": "MAA", "to": "BOM", "weight": 1}, {"from": "MAA", "to": "GOI", "weight": 1}, {"from": "MAA", "to": "COK", "weight": 1}, {"from": "MAA", "to": "CCU", "weight": 1}, {"from": "MAA", "to": "PNQ", "weight": 1}, {"from": "MAA", "to": "LKO", "weight": 1}, {"from": "MAA", "to": "IXZ", "weight": 1}, {"from": "MAA", "to": "PAT", "weight": 1}, {"from": "MAA", "to": "BBI", "weight": 1}, {"from": "MAA", "to": "CCJ", "weight": 1}, {"from": "MAA", "to": "CJB", "weight": 1}, {"from": "MAA", "to": "IXM", "weight": 1}, {"from": "MAA", "to": "TRZ", "weight": 1}, {"from": "MAA", "to": "IDR", "weight": 1}, {"from": "MAA", "to": "TCR", "weight": 1}, {"from": "MAA", "to": "HBX", "weight": 1}, {"from": "MAA", "to": "GAU", "weight": 1}, {"from": "MAA", "to": "JDH", "weight": 1}, {"from": "MAA", "to": "TRV", "weight": 1}, {"from": "MAA", "to": "VNS", "weight": 1}, {"from": "MAA", "to": "IXE", "weight": 1}, {"from": "MAA", "to": "IXC", "weight": 1}, {"from": "MAA", "to": "IXB", "weight": 1}, {"from": "MAA", "to": "JAI", "weight": 1}, {"from": "MAA", "to": "VGA", "weight": 1}, {"from": "MAA", "to": "CNN", "weight": 1}, {"from": "MAA", "to": "RDP", "weight": 1}, {"from": "MAA", "to": "SXV", "weight": 1}, {"from": "MAA", "to": "CDP", "weight": 1}, {"from": "MAA", "to": "MYQ", "weight": 1}, {"from": "DEL", "to": "IXB", "weight": 1}, {"from": "DEL", "to": "BBI", "weight": 1}, {"from": "DEL", "to": "IDR", "weight": 1}, {"from": "DEL", "to": "CCU", "weight": 1}, {"from": "DEL", "to": "GAU", "weight": 1}, {"from": "DEL", "to": "SXR", "weight": 1}, {"from": "DEL", "to": "JAI", "weight": 1}, {"from": "DEL", "to": "GOI", "weight": 1}, {"from": "DEL", "to": "PNQ", "weight": 1}, {"from": "DEL", "to": "IXR", "weight": 1}, {"from": "DEL", "to": "COK", "weight": 1}, {"from": "DEL", "to": "HYD", "weight": 1}, {"from": "DEL", "to": "IXC", "weight": 1}, {"from": "DEL", "to": "BOM", "weight": 1}, {"from": "DEL", "to": "NAG", "weight": 1}, {"from": "DEL", "to": "PAT", "weight": 1}, {"from": "DEL", "to": "VNS", "weight": 1}, {"from": "DEL", "to": "IXL", "weight": 1}, {"from": "DEL", "to": "IXJ", "weight": 1}, {"from": "DEL", "to": "LKO", "weight": 1}, {"from": "DEL", "to": "IXA", "weight": 1}, {"from": "DEL", "to": "ATQ", "weight": 1}, {"from": "DEL", "to": "IXU", "weight": 1}, {"from": "DEL", "to": "BHO", "weight": 1}, {"from": "DEL", "to": "CJB", "weight": 1}, {"from": "DEL", "to": "DED", "weight": 1}, {"from": "DEL", "to": "STV", "weight": 1}, {"from": "DEL", "to": "DIB", "weight": 1}, {"from": "DEL", "to": "VTZ", "weight": 1}, {"from": "DEL", "to": "RPR", "weight": 1}, {"from": "DEL", "to": "GOP", "weight": 1}, {"from": "DEL", "to": "IXD", "weight": 1}, {"from": "DEL", "to": "IMF", "weight": 1}, {"from": "DEL", "to": "BDQ", "weight": 1}, {"from": "DEL", "to": "GAY", "weight": 1}, {"from": "DEL", "to": "IXM", "weight": 1}, {"from": "DEL", "to": "SAG", "weight": 1}, {"from": "DEL", "to": "UDR", "weight": 1}, {"from": "DEL", "to": "TRV", "weight": 1}, {"from": "DEL", "to": "JDH", "weight": 1}, {"from": "DEL", "to": "VGA", "weight": 1}, {"from": "DEL", "to": "TIR", "weight": 1}, {"from": "DEL", "to": "AJL", "weight": 1}, {"from": "DEL", "to": "IXZ", "weight": 1}, {"from": "DEL", "to": "RAJ", "weight": 1}, {"from": "DEL", "to": "CNN", "weight": 1}, {"from": "DEL", "to": "CCJ", "weight": 1}, {"from": "DEL", "to": "BKB", "weight": 1}, {"from": "DEL", "to": "KUU", "weight": 1}, {"from": "DEL", "to": "LUH", "weight": 1}, {"from": "DEL", "to": "DHM", "weight": 1}, {"from": "DEL", "to": "IXP", "weight": 1}, {"from": "DEL", "to": "JLR", "weight": 1}, {"from": "DEL", "to": "RDP", "weight": 1}, {"from": "DEL", "to": "KNU", "weight": 1}, {"from": "DEL", "to": "IXY", "weight": 1}, {"from": "DEL", "to": "DBR", "weight": 1}, {"from": "DEL", "to": "KQH", "weight": 1}, {"from": "DEL", "to": "JRG", "weight": 1}, {"from": "IXB", "to": "CCU", "weight": 1}, {"from": "IXB", "to": "GAU", "weight": 1}, {"from": "IXB", "to": "HYD", "weight": 1}, {"from": "IXB", "to": "BOM", "weight": 1}, {"from": "IXB", "to": "DIB", "weight": 1}, {"from": "CCU", "to": "HYD", "weight": 1}, {"from": "CCU", "to": "BOM", "weight": 1}, {"from": "CCU", "to": "BBI", "weight": 1}, {"from": "CCU", "to": "GAU", "weight": 1}, {"from": "CCU", "to": "JAI", "weight": 1}, {"from": "CCU", "to": "PNQ", "weight": 1}, {"from": "CCU", "to": "LKO", "weight": 1}, {"from": "CCU", "to": "IXA", "weight": 1}, {"from": "CCU", "to": "AJL", "weight": 1}, {"from": "CCU", "to": "ATQ", "weight": 1}, {"from": "CCU", "to": "IXC", "weight": 1}, {"from": "CCU", "to": "DED", "weight": 1}, {"from": "CCU", "to": "DIB", "weight": 1}, {"from": "CCU", "to": "DMU", "weight": 1}, {"from": "CCU", "to": "GOP", "weight": 1}, {"from": "CCU", "to": "IMF", "weight": 1}, {"from": "CCU", "to": "IDR", "weight": 1}, {"from": "CCU", "to": "JRH", "weight": 1}, {"from": "CCU", "to": "COK", "weight": 1}, {"from": "CCU", "to": "RPR", "weight": 1}, {"from": "CCU", "to": "STV", "weight": 1}, {"from": "CCU", "to": "IXZ", "weight": 1}, {"from": "CCU", "to": "PAT", "weight": 1}, {"from": "CCU", "to": "IXD", "weight": 1}, {"from": "CCU", "to": "IXS", "weight": 1}, {"from": "CCU", "to": "VTZ", "weight": 1}, {"from": "CCU", "to": "VNS", "weight": 1}, {"from": "CCU", "to": "IXR", "weight": 1}, {"from": "CCU", "to": "NAG", "weight": 1}, {"from": "CCU", "to": "SHL", "weight": 1}, {"from": "CCU", "to": "JRG", "weight": 1}, {"from": "CCU", "to": "IXI", "weight": 1}, {"from": "CCU", "to": "GWL", "weight": 1}, {"from": "GOI", "to": "BOM", "weight": 1}, {"from": "GOI", "to": "HYD", "weight": 1}, {"from": "GOI", "to": "NAG", "weight": 1}, {"from": "GOI", "to": "IXC", "weight": 1}, {"from": "GOI", "to": "PNQ", "weight": 1}, {"from": "GOI", "to": "LKO", "weight": 1}, {"from": "GOI", "to": "CNN", "weight": 1}, {"from": "GOI", "to": "STV", "weight": 1}, {"from": "GOI", "to": "MYQ", "weight": 1}, {"from": "PNQ", "to": "JAI", "weight": 1}, {"from": "PNQ", "to": "LKO", "weight": 1}, {"from": "PNQ", "to": "IXC", "weight": 1}, {"from": "PNQ", "to": "HYD", "weight": 1}, {"from": "PNQ", "to": "NAG", "weight": 1}, {"from": "PNQ", "to": "IXD", "weight": 1}, {"from": "PNQ", "to": "IXG", "weight": 1}, {"from": "PNQ", "to": "ISK", "weight": 1}, {"from": "BOM", "to": "BBI", "weight": 1}, {"from": "BOM", "to": "IXC", "weight": 1}, {"from": "BOM", "to": "GAU", "weight": 1}, {"from": "BOM", "to": "HYD", "weight": 1}, {"from": "BOM", "to": "JAI", "weight": 1}, {"from": "BOM", "to": "COK", "weight": 1}, {"from": "BOM", "to": "IXR", "weight": 1}, {"from": "BOM", "to": "IDR", "weight": 1}, {"from": "BOM", "to": "IXJ", "weight": 1}, {"from": "BOM", "to": "LKO", "weight": 1}, {"from": "BOM", "to": "VNS", "weight": 1}, {"from": "BOM", "to": "NAG", "weight": 1}, {"from": "BOM", "to": "PAT", "weight": 1}, {"from": "BOM", "to": "ATQ", "weight": 1}, {"from": "BOM", "to": "IXU", "weight": 1}, {"from": "BOM", "to": "BHO", "weight": 1}, {"from": "BOM", "to": "CJB", "weight": 1}, {"from": "BOM", "to": "DED", "weight": 1}, {"from": "BOM", "to": "GOP", "weight": 1}, {"from": "BOM", "to": "HBX", "weight": 1}, {"from": "BOM", "to": "JDH", "weight": 1}, {"from": "BOM", "to": "IXM", "weight": 1}, {"from": "BOM", "to": "IXE", "weight": 1}, {"from": "BOM", "to": "RPR", "weight": 1}, {"from": "BOM", "to": "IXD", "weight": 1}, {"from": "BOM", "to": "BDQ", "weight": 1}, {"from": "BOM", "to": "UDR", "weight": 1}, {"from": "BOM", "to": "VTZ", "weight": 1}, {"from": "BOM", "to": "TRV", "weight": 1}, {"from": "BOM", "to": "IXG", "weight": 1}, {"from": "BOM", "to": "JGA", "weight": 1}, {"from": "BOM", "to": "TIR", "weight": 1}, {"from": "BOM", "to": "RAJ", "weight": 1}, {"from": "BOM", "to": "BHU", "weight": 1}, {"from": "BOM", "to": "BHJ", "weight": 1}, {"from": "BOM", "to": "DIU", "weight": 1}, {"from": "BOM", "to": "RDP", "weight": 1}, {"from": "BOM", "to": "JLR", "weight": 1}, {"from": "BOM", "to": "IXY", "weight": 1}, {"from": "BOM", "to": "KNU", "weight": 1}, {"from": "BOM", "to": "JSA", "weight": 1}, {"from": "BOM", "to": "DBR", "weight": 1}, {"from": "BOM", "to": "PBD", "weight": 1}, {"from": "BOM", "to": "JLG", "weight": 1}, {"from": "BOM", "to": "KLH", "weight": 1}, {"from": "BOM", "to": "NDC", "weight": 1}, {"from": "COK", "to": "HYD", "weight": 1}, {"from": "COK", "to": "CNN", "weight": 1}, {"from": "COK", "to": "MYQ", "weight": 1}, {"from": "IXR", "to": "HYD", "weight": 1}, {"from": "GAU", "to": "IMF", "weight": 1}, {"from": "GAU", "to": "IXA", "weight": 1}, {"from": "GAU", "to": "DIB", "weight": 1}, {"from": "GAU", "to": "IXS", "weight": 1}, {"from": "GAU", "to": "HYD", "weight": 1}, {"from": "GAU", "to": "JRH", "weight": 1}, {"from": "GAU", "to": "AJL", "weight": 1}, {"from": "GAU", "to": "DMU", "weight": 1}, {"from": "GAU", "to": "IXT", "weight": 1}, {"from": "GAU", "to": "PAT", "weight": 1}, {"from": "GAU", "to": "JAI", "weight": 1}, {"from": "GAU", "to": "TEZ", "weight": 1}, {"from": "BBI", "to": "NAG", "weight": 1}, {"from": "BBI", "to": "RPR", "weight": 1}, {"from": "BBI", "to": "HYD", "weight": 1}, {"from": "BBI", "to": "STV", "weight": 1}, {"from": "BBI", "to": "JRG", "weight": 1}, {"from": "HYD", "to": "JAI", "weight": 1}, {"from": "HYD", "to": "PAT", "weight": 1}, {"from": "HYD", "to": "IXU", "weight": 1}, {"from": "HYD", "to": "IXG", "weight": 1}, {"from": "HYD", "to": "BHO", "weight": 1}, {"from": "HYD", "to": "CCJ", "weight": 1}, {"from": "HYD", "to": "IXC", "weight": 1}, {"from": "HYD", "to": "CJB", "weight": 1}, {"from": "HYD", "to": "GOP", "weight": 1}, {"from": "HYD", "to": "LKO", "weight": 1}, {"from": "HYD", "to": "VTZ", "weight": 1}, {"from": "HYD", "to": "CNN", "weight": 1}, {"from": "HYD", "to": "IXE", "weight": 1}, {"from": "HYD", "to": "TRZ", "weight": 1}, {"from": "HYD", "to": "VGA", "weight": 1}, {"from": "HYD", "to": "RJA", "weight": 1}, {"from": "HYD", "to": "RPR", "weight": 1}, {"from": "HYD", "to": "TRV", "weight": 1}, {"from": "HYD", "to": "TIR", "weight": 1}, {"from": "HYD", "to": "IXZ", "weight": 1}, {"from": "HYD", "to": "STV", "weight": 1}, {"from": "HYD", "to": "BDQ", "weight": 1}, {"from": "HYD", "to": "IXM", "weight": 1}, {"from": "HYD", "to": "VNS", "weight": 1}, {"from": "HYD", "to": "NAG", "weight": 1}, {"from": "HYD", "to": "KLH", "weight": 1}, {"from": "HYD", "to": "IDR", "weight": 1}, {"from": "HYD", "to": "DED", "weight": 1}, {"from": "HYD", "to": "HBX", "weight": 1}, {"from": "HYD", "to": "MYQ", "weight": 1}, {"from": "HYD", "to": "ISK", "weight": 1}, {"from": "HYD", "to": "JGB", "weight": 1}, {"from": "HYD", "to": "GWL", "weight": 1}, {"from": "HYD", "to": "JLR", "weight": 1}, {"from": "HYD", "to": "KQH", "weight": 1}, {"from": "HYD", "to": "JRG", "weight": 1}, {"from": "HYD", "to": "SAG", "weight": 1}, {"from": "HYD", "to": "VDY", "weight": 1}, {"from": "HYD", "to": "NDC", "weight": 1}, {"from": "HYD", "to": "CDP", "weight": 1}, {"from": "VTZ", "to": "TIR", "weight": 1}, {"from": "IDR", "to": "RPR", "weight": 1}, {"from": "IDR", "to": "IXG", "weight": 1}, {"from": "IDR", "to": "KQH", "weight": 1}, {"from": "IXC", "to": "SXR", "weight": 1}, {"from": "IXC", "to": "LKO", "weight": 1}, {"from": "IXC", "to": "IXL", "weight": 1}, {"from": "IXC", "to": "KUU", "weight": 1}, {"from": "IXC", "to": "DHM", "weight": 1}, {"from": "SXR", "to": "IXJ", "weight": 1}, {"from": "SXR", "to": "BOM", "weight": 1}, {"from": "SXR", "to": "ATQ", "weight": 1}, {"from": "JAI", "to": "AGR", "weight": 1}, {"from": "JAI", "to": "ATQ", "weight": 1}, {"from": "JAI", "to": "VNS", "weight": 1}, {"from": "IMF", "to": "IXA", "weight": 1}, {"from": "IMF", "to": "AJL", "weight": 1}, {"from": "IMF", "to": "DMU", "weight": 1}, {"from": "LKO", "to": "DED", "weight": 1}, {"from": "LKO", "to": "RPR", "weight": 1}, {"from": "LKO", "to": "PAT", "weight": 1}, {"from": "VNS", "to": "HJR", "weight": 1}, {"from": "VNS", "to": "PAT", "weight": 1}, {"from": "PAT", "to": "ATQ", "weight": 1}, {"from": "IXL", "to": "SXR", "weight": 1}, {"from": "RPR", "to": "IXD", "weight": 1}, {"from": "RPR", "to": "JGB", "weight": 1}, {"from": "RPR", "to": "JRG", "weight": 1}, {"from": "DED", "to": "PGH", "weight": 1}, {"from": "AJL", "to": "IXS", "weight": 1}, {"from": "VGA", "to": "CDP", "weight": 1}, {"from": "TRV", "to": "CNN", "weight": 1}, {"from": "CNN", "to": "HBX", "weight": 1}, {"from": "CNN", "to": "CCJ", "weight": 1}, {"from": "IXD", "to": "GOP", "weight": 1}, {"from": "IXE", "to": "DEL", "weight": 1}, {"from": "IXE", "to": "MYQ", "weight": 1}, {"from": "IXG", "to": "CDP", "weight": 1}, {"from": "IXG", "to": "TIR", "weight": 1}, {"from": "IXG", "to": "MYQ", "weight": 1}, {"from": "HBX", "to": "VDX", "weight": 1}, {"from": "DIB", "to": "JRH", "weight": 1}, {"from": "JRH", "to": "TEZ", "weight": 1}, {"from": "HXB", "to": "CNN", "weight": 1}, {"from": "IXT", "to": "TEZ", "weight": 1}]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {
+			"configure": {
+				"enabled": false
+			},
+			"edges": {
+				"color": {
+					"inherit": true
+				},
+				"smooth": {
+					"enabled": false,
+					"type": "continuous"
+				}
+			},
+			"interaction": {
+				"dragNodes": true,
+				"hideEdgesOnDrag": false,
+				"hideNodesOnDrag": false
+			},
+			"physics": {
+				"enabled": true,
+				"stabilization": {
+					"enabled": true,
+					"fit": true,
+					"iterations": 1000,
+					"onlyDynamicEdges": false,
+					"updateInterval": 50
+				},
+				"barnesHut": {
+				  "gravitationalConstant": -22850
+				},
+				"minVelocity": 0.75
+			}
+		};
+        
+        network = new vis.Network(container, data, options);
+	 
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+</body>
+</html>

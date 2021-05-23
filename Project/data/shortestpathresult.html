@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title></title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href={{ css }}>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			$("#viewMap").click(function(){
+				$("#mapForm").submit(); // Submit the form
+			});
+		});
+	</script>
+	<style>
+		body {
+		  font-family: "Lato", sans-serif;
+		}
+
+		.sidenav {
+		  height: 100%;
+		  width: 0;
+		  position: fixed;
+		  z-index: 1;
+		  top: 0;
+		  left: 0;
+		  background-color: #111;
+		  overflow-x: hidden;
+		  transition: 0.5s;
+		  padding-top: 60px;
+		}
+
+		.sidenav a {
+		  padding: 8px 8px 8px 32px;
+		  text-decoration: none;
+		  font-size: 25px;
+		  color: #818181;
+		  display: block;
+		  transition: 0.3s;
+		}
+
+		.sidenav a:hover {
+		  color: #f1f1f1;
+		}
+
+		.sidenav .closebtn {
+		  position: absolute;
+		  top: 0;
+		  right: 25px;
+		  font-size: 36px;
+		  margin-left: 50px;
+		}
+
+		#main {
+		  transition: margin-left .5s;
+		  padding: 16px;
+		}
+		
+		@media screen and (max-height: 450px) {
+		  .sidenav {padding-top: 15px;}
+		  .sidenav a {font-size: 18px;}
+		}
+		
+		.topnav {
+		  
+		  background-color: #333;
+		}
+
+		.topnav a {
+		  float: left;
+		  color: #f2f2f2;
+		  text-align: center;
+		  padding: 16px 16px;
+		  text-decoration: none;
+		  font-size: 15px;
+		}
+
+		.topnav a.active {
+		  background-color: #4CAF50;
+		  color: white;
+		}
+		
+		.card {
+			border-left-width: 1px;
+			border-right-width: 1px;
+			border-top-width: 1px;
+			border-bottom-width: 1px;
+			border-style: solid;
+			border-radius: 5px;
+			margin-top: 20px;
+		}
+	</style>
+</head>
+<body>
+	<div id="mySidenav" class="sidenav">
+	  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+	  <a href="/">Dashboard</a>
+	  <a href="/figures">Show Graphs</a>
+	  <a href="/interactive">Interactive Visualization</a>
+	  <a href="/visualization">Visualization</a>
+	  <a href="/map">View Map</a>
+	  <a href="/shortestpath">Fetch Shortest Path</a>	
+	</div>
+	
+	<div id="main" class="topnav">
+		<button style="background-color: #333;" onclick="openNav()" class='btn btn-primary'>
+			<span style="font-size:25px;cursor:pointer;color:white;background-color: #333;" >&#9776;</span>
+		</button>
+		<span style="font-size:25px;color:white">Analysis of Airport Network of India</span>
+		
+	</div>	
+
+	<script>
+	function openNav() {
+		document.getElementById("mySidenav").style.width = "250px";
+		document.getElementById("main").style.marginLeft = "250px";
+		//document.getElementById("main2").style.marginLeft = "250px";
+		document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
+	}
+
+	function closeNav() {
+		document.getElementById("mySidenav").style.width = "0";
+		document.getElementById("main").style.marginLeft= "0";
+		//document.getElementById("main2").style.marginLeft= "0";
+		document.body.style.backgroundColor = "white";
+	}
+	</script>
+	
+	<div id="main2" class="panel panel-default">
+		<div class="col-sm-6">
+		<img src="data:image/png;base64, {{ shortest_path }}">
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<table class="table table-bordered">
+			<tbody>
+			  <tr>
+				<td style="font-weight: bold;">Route</td>
+			  </tr>
+			  <tr>
+				<td>{{ shortestPathRoute }}</td>
+			  </tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+
+</html>
